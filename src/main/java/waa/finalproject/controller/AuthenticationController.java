@@ -91,6 +91,7 @@ public class AuthenticationController {
             Seller seller = new Seller();
             Set<Order> orders = new HashSet<>();
             Set<Product> products = new HashSet<>();
+            seller.setFullName(userRegistrationRequestDto.getFullName());
             seller.setUsername(userRegistrationRequestDto.getUsername());
             seller.setPassword(new BCryptPasswordEncoder().encode(userRegistrationRequestDto.getPassword()));
             Set<Role> roles = new HashSet<>();
