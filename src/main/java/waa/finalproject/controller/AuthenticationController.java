@@ -67,32 +67,41 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> addUser(@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
-        if (userRegistrationRequestDto.isBuyer()) {
+    public ResponseEntity<?> addUser(@RequestBody UserRegistrationRequestDto userRegistrationRequest) {
+        if (userRegistrationRequest.isBuyer()) {
             Buyer buyer = new Buyer();
             Set<Order> orders = new HashSet<>();
             Set<Address> addresses = new HashSet<>();
             Set<Review> reviews = new HashSet<>();
-            buyer.setUsername(userRegistrationRequestDto.getUsername());
-            buyer.setPassword(new BCryptPasswordEncoder().encode(userRegistrationRequestDto.getPassword()));
+            buyer.setUsername(userRegistrationRequest.getUsername());
+            buyer.setPassword(new BCryptPasswordEncoder().encode(userRegistrationRequest.getPassword()));
             Set<Role> roles = new HashSet<>();
             roles.add(roleService.getRoleByName("ROLE_BUYER"));
             buyer.setRoles(roles);
-            buyer.setFullName(userRegistrationRequestDto.getFullName());
+            buyer.setFullName(userRegistrationRequest.getFullName());
             buyer.setBalance(0);
             buyer.setOrders(orders);
-            buyer.setAddresses(addresses);
             buyer.setReviews(reviews);
+
+            Address address = new Address();
+            address.setCity(userRegistrationRequest.getCity());
+            address.setAddressType(AddressType.SHIPPING);
+            address.setCountry(userRegistrationRequest.getCountry());
+            address.setZipCode(userRegistrationRequest.getZipCode());
+
+            addresses.add(address);
+
+            buyer.setAddresses(addresses);
             Buyer savedBuyer = buyerService.addBuyer(buyer);
             System.out.println("Buyer Created!");
             return ResponseEntity.ok(savedBuyer);
         }
-        if (userRegistrationRequestDto.isSeller()) {
+        if (userRegistrationRequest.isSeller()) {
             Seller seller = new Seller();
             Set<Order> orders = new HashSet<>();
             Set<Product> products = new HashSet<>();
-            seller.setUsername(userRegistrationRequestDto.getUsername());
-            seller.setPassword(new BCryptPasswordEncoder().encode(userRegistrationRequestDto.getPassword()));
+            seller.setUsername(userRegistrationRequest.getUsername());
+            seller.setPassword(new BCryptPasswordEncoder().encode(userRegistrationRequest.getPassword()));
             Set<Role> roles = new HashSet<>();
             roles.add(roleService.getRoleByName("ROLE_SELLER"));
             seller.setRoles(roles);
